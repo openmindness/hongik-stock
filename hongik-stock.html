@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>홍익 주식 투자대회 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #3182F6; --blue-light: #EBF3FE; --blue-dark: #1B64DA;
+    --green: #05C072; --green-light: #E6FAF3;
+    --red: #F04452; --red-light: #FEE9EB;
+    --gray-50: #F9FAFB; --gray-100: #F2F4F6; --gray-200: #E5E8EB;
+    --gray-300: #D1D6DB; --gray-500: #8B95A1; --gray-700: #4E5968; --gray-900: #191F28;
+    --white: #FFFFFF; --radius: 16px; --shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Pretendard', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-900); min-height: 100vh; }
+
+  /* Setup Banner */
+  .setup-banner {
+    background: linear-gradient(135deg, #FF6B35, #F7931E);
+    color: white; padding: 14px 20px; font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; gap: 10px; cursor: pointer;
+  }
+  .setup-banner.hidden { display: none; }
+  .setup-pulse { width: 8px; height: 8px; background: white; border-radius: 50%; flex-shrink: 0; animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+
+  /* Setup Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-end; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--white); border-radius: 24px 24px 0 0; padding: 28px 24px 40px; width: 100%; max-width: 480px; animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .modal-handle { width: 36px; height: 4px; background: var(--gray-200); border-radius: 2px; margin: 0 auto 20px; }
+  .modal-title { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+  .modal-desc { font-size: 13px; color: var(--gray-500); margin-bottom: 20px; line-height: 1.6; }
+  .modal-step { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; font-size: 13px; line-height: 1.6; color: var(--gray-700); }
+  .modal-step-num { width: 22px; height: 22px; background: var(--blue); color: white; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .modal-input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--gray-200); border-radius: 12px; font-size: 14px; font-family: inherit; font-weight: 500; color: var(--gray-900); outline: none; margin: 16px 0 8px; transition: border-color 0.2s; }
+  .modal-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(49,130,246,0.12); }
+  .modal-input::placeholder { color: var(--gray-300); font-weight: 400; }
+  .modal-hint { font-size: 12px; color: var(--gray-500); margin-bottom: 20px; }
+  .btn-modal { width: 100%; padding: 16px; background: var(--blue); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.2s; }
+  .btn-modal:hover { background: var(--blue-dark); }
+
+  /* Code block in modal */
+  .code-block { background: var(--gray-900); color: #A8FF78; border-radius: 10px; padding: 12px 14px; font-size: 11px; font-family: monospace; line-height: 1.6; margin: 12px 0; overflow-x: auto; white-space: pre; }
+  .copy-btn { width: 100%; padding: 10px; background: var(--gray-100); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--gray-700); cursor: pointer; font-family: inherit; margin-bottom: 16px; transition: background 0.2s; }
+  .copy-btn:hover { background: var(--gray-200); }
+
+  /* Header */
+  .header { background: var(--white); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--gray-200); }
+  .header-inner { max-width: 480px; margin: 0 auto; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 800; color: var(--blue); letter-spacing: -0.5px; }
+  .logo-icon { width: 32px; height: 32px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
+  .header-badge { background: var(--blue-light); color: var(--blue); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+
+  /* Container */
+  .container { max-width: 480px; margin: 0 auto; padding: 0 20px 80px; }
+
+  /* Banner */
+  .banner { background: linear-gradient(135deg, #1B64DA 0%, #3182F6 60%, #5B9FFD 100%); border-radius: var(--radius); margin: 20px 0 16px; padding: 24px 22px; color: white; position: relative; overflow: hidden; }
+  .banner::before { content: ''; position: absolute; right: -20px; top: -20px; width: 120px; height: 120px; background: rgba(255,255,255,0.08); border-radius: 50%; }
+  .banner::after { content: ''; position: absolute; right: 30px; bottom: -30px; width: 80px; height: 80px; background: rgba(255,255,255,0.06); border-radius: 50%; }
+  .banner-label { font-size: 12px; font-weight: 600; opacity: 0.75; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .banner-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .banner-period { font-size: 13px; opacity: 0.85; margin-bottom: 18px; }
+  .banner-stats { display: flex; gap: 20px; }
+  .banner-stat { display: flex; flex-direction: column; gap: 2px; }
+  .banner-stat-label { font-size: 11px; opacity: 0.7; font-weight: 500; }
+  .banner-stat-value { font-size: 18px; font-weight: 700; }
+
+  /* Countdown */
+  .countdown-card { background: var(--white); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow); }
+  .countdown-label { font-size: 14px; font-weight: 600; color: var(--gray-700); }
+  .countdown-sub { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+  .countdown-timer { display: flex; gap: 8px; align-items: center; }
+  .time-block { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .time-num { background: var(--blue); color: white; font-size: 16px; font-weight: 700; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
+  .time-label { font-size: 10px; color: var(--gray-500); font-weight: 500; }
+  .time-sep { font-size: 18px; font-weight: 700; color: var(--gray-300); margin-bottom: 12px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; background: var(--gray-100); border-radius: 12px; padding: 4px; margin-bottom: 16px; }
+  .tab { flex: 1; border: none; background: transparent; padding: 10px; border-radius: 9px; font-size: 14px; font-weight: 600; color: var(--gray-500); cursor: pointer; transition: all 0.2s; font-family: inherit; }
+  .tab.active { background: var(--white); color: var(--gray-900); box-shadow: 0 1px 6px rgba(0,0,0,0.1); }
+  .panel { display: none; } .panel.active { display: block; }
+
+  /* Leaderboard */
+  .section-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--gray-900); }
+  .rank-card { background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 8px; }
+  .rank-top3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .rank-top-card { background: var(--white); border-radius: 14px; padding: 16px 12px; text-align: center; box-shadow: var(--shadow); }
+  .rank-top-card.first { border: 2px solid #FFD700; background: linear-gradient(180deg,#FFFBEC 0%,#fff 100%); }
+  .rank-top-card.second { border: 2px solid #C0C0C0; }
+  .rank-top-card.third { border: 2px solid #CD7F32; }
+  .rank-medal { font-size: 22px; margin-bottom: 6px; }
+  .rank-nick { font-size: 12px; font-weight: 700; color: var(--gray-900); margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rank-ticker-badge { font-size: 10px; font-weight: 600; color: var(--blue); background: var(--blue-light); border-radius: 6px; padding: 2px 6px; margin-bottom: 6px; display: inline-block; }
+  .rank-return { font-size: 16px; font-weight: 800; }
+  .pos { color: var(--green); } .neg { color: var(--red); } .zero { color: var(--gray-700); }
+  .rank-row { display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--gray-100); transition: background 0.15s; }
+  .rank-row:last-child { border-bottom: none; }
+  .rank-row:hover { background: var(--gray-50); }
+  .rank-num { width: 28px; font-size: 14px; font-weight: 700; color: var(--gray-500); flex-shrink: 0; }
+  .rank-info { flex: 1; margin-left: 4px; }
+  .rank-info-nick { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+  .rank-info-ticker { font-size: 12px; color: var(--blue); font-weight: 600; background: var(--blue-light); border-radius: 5px; padding: 1px 6px; display: inline-block; margin-top: 3px; }
+  .rank-info-date { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+  .rank-return-right { font-size: 16px; font-weight: 700; text-align: right; }
+  .rank-return-sub { font-size: 11px; color: var(--gray-500); text-align: right; margin-top: 2px; }
+
+  /* Loading / Empty */
+  .empty-state { text-align: center; padding: 48px 24px; color: var(--gray-500); }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-title { font-size: 16px; font-weight: 700; color: var(--gray-700); margin-bottom: 6px; }
+  .empty-desc { font-size: 14px; line-height: 1.6; }
+  .loading-state { text-align: center; padding: 40px 24px; }
+  .spinner { width: 32px; height: 32px; border: 3px solid var(--gray-200); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+  .loading-text { font-size: 14px; color: var(--gray-500); font-weight: 500; }
+
+  /* Form */
+  .form-card { background: var(--white); border-radius: var(--radius); padding: 24px 20px; box-shadow: var(--shadow); margin-bottom: 16px; }
+  .form-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+  .form-desc { font-size: 13px; color: var(--gray-500); margin-bottom: 24px; line-height: 1.5; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px; display: block; }
+  .form-input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--gray-200); border-radius: 12px; font-size: 15px; font-family: inherit; font-weight: 500; color: var(--gray-900); outline: none; transition: border-color 0.2s; background: var(--white); }
+  .form-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(49,130,246,0.12); }
+  .form-input::placeholder { color: var(--gray-300); font-weight: 400; }
+  .form-hint { font-size: 12px; color: var(--gray-500); margin-top: 6px; }
+  .form-hint.error { color: var(--red); }
+  .btn-primary { width: 100%; padding: 16px; background: var(--blue); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { background: var(--gray-200); color: var(--gray-500); cursor: not-allowed; }
+
+  /* Rules */
+  .rules-card { background: var(--blue-light); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px; }
+  .rules-title { font-size: 14px; font-weight: 700; color: var(--blue-dark); margin-bottom: 12px; }
+  .rules-list { display: flex; flex-direction: column; gap: 8px; }
+  .rules-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--blue-dark); line-height: 1.5; }
+  .rules-dot { width: 18px; height: 18px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+  /* Update */
+  .update-section { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px; }
+  .update-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .update-desc { font-size: 12px; color: var(--gray-500); margin-bottom: 16px; }
+  .update-row { display: flex; gap: 8px; align-items: flex-end; }
+  .update-row .form-group { flex: 1; margin-bottom: 0; }
+  .btn-update { padding: 14px 16px; background: var(--gray-900); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; white-space: nowrap; transition: background 0.2s; height: 50px; }
+  .btn-update:hover { background: var(--gray-700); }
+
+  /* Status */
+  .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
+  .status-badge.live { background: var(--green-light); color: var(--green); }
+  .status-badge.upcoming { background: var(--blue-light); color: var(--blue); }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
+
+  /* Refresh row */
+  .refresh-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .btn-refresh { display: flex; align-items: center; gap: 5px; background: var(--gray-100); border: none; border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 600; color: var(--gray-700); cursor: pointer; font-family: inherit; transition: background 0.2s; }
+  .btn-refresh:hover { background: var(--gray-200); }
+  .spinning { animation: spin 0.8s linear infinite; display: inline-block; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--gray-900); color: white; padding: 14px 20px; border-radius: 14px; font-size: 14px; font-weight: 600; z-index: 999; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap; display: flex; align-items: center; gap: 8px; max-width: 340px; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success .toast-icon { color: var(--green); }
+  .toast.error .toast-icon { color: var(--red); }
+
+  /* Deadline Modal */
+  .deadline-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 300; align-items: center; justify-content: center; padding: 24px; }
+  .deadline-overlay.show { display: flex; }
+  .deadline-modal { background: var(--white); border-radius: 24px; padding: 32px 28px; width: 100%; max-width: 380px; text-align: center; animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes popIn { from{transform:scale(0.85);opacity:0} to{transform:scale(1);opacity:1} }
+  .deadline-icon { font-size: 52px; margin-bottom: 16px; }
+  .deadline-title { font-size: 20px; font-weight: 800; color: var(--gray-900); margin-bottom: 8px; }
+  .deadline-desc { font-size: 14px; color: var(--gray-500); line-height: 1.6; margin-bottom: 20px; }
+  .deadline-badge { display: inline-block; background: var(--red-light); color: var(--red); font-size: 13px; font-weight: 700; padding: 8px 16px; border-radius: 20px; margin-bottom: 20px; }
+  .btn-deadline-close { width: 100%; padding: 14px; background: var(--gray-900); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; }
+  .reg-closed-wrap { background: var(--white); border-radius: var(--radius); padding: 40px 24px; text-align: center; box-shadow: var(--shadow); }
+  .reg-closed-wrap .icon { font-size: 48px; margin-bottom: 12px; }
+  .reg-closed-wrap .title { font-size: 18px; font-weight: 800; color: var(--gray-900); margin-bottom: 8px; }
+  .reg-closed-wrap .desc { font-size: 14px; color: var(--gray-500); line-height: 1.6; }
+  .reg-closed-wrap .badge { display: inline-block; background: var(--red-light); color: var(--red); font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: 20px; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+
+<!-- Setup Banner -->
+<div class="setup-banner" id="setupBanner" onclick="openSetup()">
+  <div class="setup-pulse"></div>
+  ⚙️ Apps Script URL을 먼저 설정해주세요 — 탭하여 설정
+</div>
+
+<!-- Setup Modal -->
+<div class="modal-overlay" id="setupModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⚙️ 구글 시트 연동 설정</div>
+    <div class="modal-desc">아래 순서대로 Apps Script를 배포하고 URL을 붙여넣으세요.</div>
+
+    <div class="modal-step"><div class="modal-step-num">1</div><div>구글 시트 열기 → 상단 메뉴 <b>확장 프로그램 → Apps Script</b></div></div>
+    <div class="modal-step"><div class="modal-step-num">2</div><div>기존 내용 모두 지우고 아래 코드 붙여넣기 후 <b>저장(Ctrl+S)</b></div></div>
+
+    <div class="code-block" id="scriptCode">const SHEET_NAME = 'participants';
+function doGet(e){return handle(e);}
+function doPost(e){return handle(e);}
+function handle(e){
+  const s=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  let r;
+  try{
+    const a=e.parameter.action;
+    if(a==='getAll') r=getAll(s);
+    else if(a==='register') r=reg(s,e.parameter);
+    else if(a==='updatePrice') r=upd(s,e.parameter);
+    else r={error:'Unknown'};
+  }catch(err){r={error:err.message};}
+  return ContentService.createTextOutput(JSON.stringify(r)).setMimeType(ContentService.MimeType.JSON);
+}
+function getAll(s){
+  const d=s.getDataRange().getValues();
+  if(d.length<=1)return{participants:[]};
+  const h=d[0];
+  return{participants:d.slice(1).map(r=>{const o={};h.forEach((k,i)=>o[k]=r[i]);return o;})};
+}
+function reg(s,p){
+  const d=s.getDataRange().getValues();
+  if(d.slice(1).find(r=>r[0]===p.nick))return{error:'이미 사용중인 닉네임입니다.'};
+  const n=new Date().toISOString();
+  s.appendRow([p.nick,p.ticker,Number(p.startPrice),Number(p.startPrice),n,n]);
+  return{success:true};
+}
+function upd(s,p){
+  const d=s.getDataRange().getValues();
+  for(let i=1;i<d.length;i++){
+    if(d[i][0]===p.nick){
+      s.getRange(i+1,4).setValue(Number(p.currentPrice));
+      s.getRange(i+1,6).setValue(new Date().toISOString());
+      return{success:true};
+    }
+  }
+  return{error:'참가자를 찾을 수 없습니다.'};
+}</div>
+    <button class="copy-btn" onclick="copyScript()">📋 코드 복사하기</button>
+
+    <div class="modal-step"><div class="modal-step-num">3</div><div><b>배포 → 새 배포</b> → 유형: 웹 앱 → 다음 사용자로 실행: <b>나</b> → 액세스: <b>모든 사용자</b> → 배포</div></div>
+    <div class="modal-step"><div class="modal-step-num">4</div><div>나오는 <b>웹 앱 URL</b>을 아래에 붙여넣기</div></div>
+
+    <input class="modal-input" id="apiUrlInput" type="url" placeholder="https://script.google.com/macros/s/.../exec">
+    <div class="modal-hint">배포 URL은 https://script.google.com/macros/s/...로 시작합니다</div>
+    <button class="btn-modal" onclick="saveApiUrl()">저장하고 시작하기 →</button>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">📈</div>
+      홍익투자
+    </div>
+    <span class="header-badge" id="participantBadge">불러오는 중...</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Banner -->
+  <div class="banner">
+    <div class="banner-label">🏆 HONGIK STOCK CONTEST 2026</div>
+    <div class="banner-title">홍익 주식 투자대회</div>
+    <div class="banner-period">📅 2026년 3월 3일 ~ 3월 31일</div>
+    <div class="banner-stats">
+      <div class="banner-stat"><span class="banner-stat-label">기간</span><span class="banner-stat-value">29일</span></div>
+      <div class="banner-stat"><span class="banner-stat-label">참가자</span><span class="banner-stat-value" id="bannerParticipants">-</span></div>
+      <div class="banner-stat"><span class="banner-stat-label">평균 수익률</span><span class="banner-stat-value" id="bannerAvgReturn">-</span></div>
+    </div>
+  </div>
+
+  <div id="statusBadge"></div>
+
+  <!-- Countdown -->
+  <div class="countdown-card">
+    <div>
+      <div class="countdown-label" id="countdownLabel">대회 시작까지</div>
+      <div class="countdown-sub" id="countdownSub">2026년 3월 3일 시작</div>
+    </div>
+    <div class="countdown-timer">
+      <div class="time-block"><div class="time-num" id="cdDays">--</div><div class="time-label">일</div></div>
+      <div class="time-sep">:</div>
+      <div class="time-block"><div class="time-num" id="cdHours">--</div><div class="time-label">시</div></div>
+      <div class="time-sep">:</div>
+      <div class="time-block"><div class="time-num" id="cdMins">--</div><div class="time-label">분</div></div>
+      <div class="time-sep">:</div>
+      <div class="time-block"><div class="time-num" id="cdSecs">--</div><div class="time-label">초</div></div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('leaderboard')">🏅 순위</button>
+    <button class="tab" onclick="switchTab('register')">✍️ 참가</button>
+    <button class="tab" onclick="switchTab('update')">🔄 갱신</button>
+  </div>
+
+  <!-- Leaderboard Panel -->
+  <div class="panel active" id="panel-leaderboard">
+    <div class="refresh-row">
+      <div class="section-title">실시간 수익률 순위</div>
+      <button class="btn-refresh" id="refreshBtn" onclick="loadLeaderboard(true)">
+        <span id="refreshIcon">↻</span> 새로고침
+      </button>
+    </div>
+    <div id="leaderboardContainer">
+      <div class="rank-card"><div class="loading-state"><div class="spinner"></div><div class="loading-text">순위를 불러오는 중...</div></div></div>
+    </div>
+  </div>
+
+  <!-- Register Panel -->
+  <div class="panel" id="panel-register">
+    <div id="regClosedBanner" style="display:none;" class="reg-closed-wrap">
+      <div class="icon">🚫</div>
+      <div class="badge">참가 마감</div>
+      <div class="title">참가 신청이 마감되었습니다</div>
+      <div class="desc">참가 신청은 <b>2026년 3월 3일 오전 9시</b>까지만 가능합니다.<br>이미 대회가 시작되었어요.</div>
+    </div>
+    <div id="regFormWrap">
+    <div class="rules-card">
+      <div class="rules-title">📋 참가 규칙</div>
+      <div class="rules-list">
+        <div class="rules-item"><div class="rules-dot">1</div><div>닉네임과 주식 티커 1개를 선택하여 참가. 닉네임당 1티커만 가능합니다.</div></div>
+        <div class="rules-item"><div class="rules-dot">2</div><div>참가 기준가는 <b>2026년 3월 3일 오전 9시 시장 시초가</b>를 사용합니다.</div></div>
+        <div class="rules-item"><div class="rules-dot">3</div><div>3월 31일 종료 시점에 수익률이 가장 높은 참가자가 우승합니다.</div></div>
+        <div class="rules-item"><div class="rules-dot">4</div><div>수익률 = (현재가 − 시작가) ÷ 시작가 × 100</div></div>
+      </div>
+    </div>
+    <div class="form-card">
+      <div class="form-title">참가 신청</div>
+      <div class="form-desc">닉네임과 종목을 입력하고 대회에 참가하세요 🚀</div>
+      <div class="form-group">
+        <label class="form-label">닉네임</label>
+        <input class="form-input" id="regNick" type="text" placeholder="예: 주식왕김철수" maxlength="12">
+        <div class="form-hint">최대 12자, 중복 불가</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">주식 티커</label>
+        <input class="form-input" id="regTicker" type="text" placeholder="예: AAPL, 005930, TSLA" maxlength="10">
+        <div class="form-hint">국내/해외 티커 모두 가능 (삼성전자: 005930)</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">참가 기준가 (시작가)</label>
+        <input class="form-input" id="regStartPrice" type="number" placeholder="예: 185.23" step="0.01" min="0.01">
+        <div class="form-hint">2026년 3월 3일 오전 9시 시초가를 입력하세요</div>
+      </div>
+      <div class="form-hint error" id="regError" style="display:none;margin-bottom:12px;font-size:13px;"></div>
+      <button class="btn-primary" id="regBtn" onclick="register()">참가 신청하기</button>
+    </div>
+  </div>
+
+    </div><!-- /regFormWrap -->
+  <!-- Update Panel -->
+  <div class="panel" id="panel-update">
+    <div class="update-section">
+      <div class="update-title">현재 주가 갱신</div>
+      <div class="update-desc">닉네임과 현재 주가를 입력하면 구글 시트에 실시간 반영됩니다.</div>
+      <div class="update-row">
+        <div class="form-group">
+          <label class="form-label">닉네임</label>
+          <input class="form-input" id="updNick" type="text" placeholder="내 닉네임">
+        </div>
+        <div class="form-group">
+          <label class="form-label">현재가</label>
+          <input class="form-input" id="updPrice" type="number" placeholder="현재 주가" step="0.01" min="0.01">
+        </div>
+        <button class="btn-update" onclick="updatePrice()">갱신</button>
+      </div>
+    </div>
+    <div class="form-card" style="padding: 16px 20px;">
+      <div style="font-size: 13px; color: var(--gray-700); font-weight: 600; margin-bottom: 10px;">전체 참가자 목록</div>
+      <div id="participantList"><div class="loading-state"><div class="spinner"></div><div class="loading-text">불러오는 중...</div></div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Deadline Modal -->
+<div class="deadline-overlay" id="deadlineModal">
+  <div class="deadline-modal">
+    <div class="deadline-icon">🚫</div>
+    <div class="deadline-title">참가 신청이 마감되었습니다</div>
+    <div class="deadline-desc">참가 신청은 <b>2026년 3월 3일 오전 9시</b> 이전까지만 가능합니다.<br>대회는 이미 시작되었어요.</div>
+    <div class="deadline-badge">⏰ 마감: 2026. 3. 3. 오전 9:00</div>
+    <button class="btn-deadline-close" onclick="document.getElementById('deadlineModal').classList.remove('show')">확인</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✓</span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+const STORAGE_KEY = 'hongikApiUrl';
+
+function getApiUrl() { return localStorage.getItem(STORAGE_KEY) || ''; }
+
+function openSetup() {
+  document.getElementById('apiUrlInput').value = getApiUrl();
+  document.getElementById('setupModal').classList.add('show');
+}
+
+function saveApiUrl() {
+  const url = document.getElementById('apiUrlInput').value.trim();
+  if (!url.startsWith('https://script.google.com')) {
+    showToast('error', '올바른 Apps Script URL을 입력해주세요'); return;
+  }
+  localStorage.setItem(STORAGE_KEY, url);
+  document.getElementById('setupModal').classList.remove('show');
+  document.getElementById('setupBanner').classList.add('hidden');
+  showToast('success', '✅ 연동 완료! 데이터를 불러옵니다');
+  loadLeaderboard();
+}
+
+function copyScript() {
+  const code = document.getElementById('scriptCode').textContent;
+  navigator.clipboard.writeText(code).then(() => showToast('success', '📋 코드가 복사되었습니다!'));
+}
+
+document.getElementById('setupModal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('show');
+});
+document.getElementById('deadlineModal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('show');
+});
+
+// API
+function apiCall(params) {
+  const url = getApiUrl();
+  if (!url) { openSetup(); return Promise.reject('no url'); }
+  return fetch(`${url}?${new URLSearchParams(params)}`).then(r => r.json());
+}
+
+// Dates
+const START = new Date('2026-03-03T09:00:00');
+const END   = new Date('2026-03-31T23:59:59');
+function getStatus() {
+  const n = new Date();
+  if (n < START) return 'upcoming';
+  if (n > END)   return 'ended';
+  return 'live';
+}
+
+function updateCountdown() {
+  const status = getStatus();
+  let target;
+  if (status === 'upcoming') {
+    target = START;
+    document.getElementById('countdownLabel').textContent = '대회 시작까지';
+    document.getElementById('countdownSub').textContent = '2026년 3월 3일 오전 9시 시작';
+  } else if (status === 'live') {
+    target = END;
+    document.getElementById('countdownLabel').textContent = '대회 종료까지';
+    document.getElementById('countdownSub').textContent = '2026년 3월 31일 종료';
+  } else {
+    document.getElementById('countdownLabel').textContent = '대회 종료';
+    document.getElementById('countdownSub').textContent = '2026년 3월 31일 종료됨';
+    ['cdDays','cdHours','cdMins','cdSecs'].forEach(id => document.getElementById(id).textContent = '00');
+    return;
+  }
+  const diff = target - new Date();
+  if (diff <= 0) return;
+  document.getElementById('cdDays').textContent  = String(Math.floor(diff/86400000)).padStart(2,'0');
+  document.getElementById('cdHours').textContent = String(Math.floor(diff%86400000/3600000)).padStart(2,'0');
+  document.getElementById('cdMins').textContent  = String(Math.floor(diff%3600000/60000)).padStart(2,'0');
+  document.getElementById('cdSecs').textContent  = String(Math.floor(diff%60000/1000)).padStart(2,'0');
+}
+
+function renderStatusBadge() {
+  const s = getStatus();
+  const el = document.getElementById('statusBadge');
+  if (s === 'live') el.innerHTML = '<div class="status-badge live"><div class="status-dot"></div>대회 진행중</div>';
+  else if (s === 'upcoming') el.innerHTML = '<div class="status-badge upcoming"><div class="status-dot"></div>대회 시작 전</div>';
+  else el.innerHTML = '<div class="status-badge" style="background:var(--gray-100);color:var(--gray-500)">🏁 대회 종료</div>';
+}
+
+function calcReturn(s, c) { if (!s || s == 0) return 0; return (c - s) / s * 100; }
+function formatReturn(v) { return (v > 0 ? '+' : '') + v.toFixed(2) + '%'; }
+function returnClass(v) { return v > 0 ? 'pos' : v < 0 ? 'neg' : 'zero'; }
+
+async function loadLeaderboard(showSpin) {
+  if (showSpin) {
+    const icon = document.getElementById('refreshIcon');
+    icon.classList.add('spinning');
+    setTimeout(() => icon.classList.remove('spinning'), 1000);
+  }
+  document.getElementById('leaderboardContainer').innerHTML =
+    '<div class="rank-card"><div class="loading-state"><div class="spinner"></div><div class="loading-text">구글 시트에서 불러오는 중...</div></div></div>';
+  try {
+    const res = await apiCall({ action: 'getAll' });
+    if (res.error) throw new Error(res.error);
+    renderLeaderboard(res.participants || []);
+  } catch(e) {
+    document.getElementById('leaderboardContainer').innerHTML =
+      `<div class="rank-card"><div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">불러오기 실패</div><div class="empty-desc">${e.message || 'URL 설정을 확인해주세요'}</div></div></div>`;
+  }
+}
+
+function renderLeaderboard(list) {
+  const participants = [...list].sort((a,b) =>
+    calcReturn(Number(b.startPrice), Number(b.currentPrice)) -
+    calcReturn(Number(a.startPrice), Number(a.currentPrice))
+  );
+  document.getElementById('participantBadge').textContent = `${participants.length}명 참여중`;
+  document.getElementById('bannerParticipants').textContent = `${participants.length}명`;
+  if (participants.length > 0) {
+    const avg = participants.reduce((s,p)=>s+calcReturn(Number(p.startPrice),Number(p.currentPrice)),0)/participants.length;
+    document.getElementById('bannerAvgReturn').textContent = formatReturn(avg);
+  } else { document.getElementById('bannerAvgReturn').textContent = '-'; }
+
+  const c = document.getElementById('leaderboardContainer');
+  if (!participants.length) {
+    c.innerHTML = '<div class="rank-card"><div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">아직 참가자가 없어요</div><div class="empty-desc">첫 번째로 참가 신청을 해보세요! 🚀</div></div></div>';
+    return;
+  }
+
+  const medals=['🥇','🥈','🥉'], classes=['first','second','third'];
+  const top = participants.slice(0, Math.min(3, participants.length));
+  let html = '<div class="rank-top3">';
+  top.forEach((p,i) => {
+    const ret = calcReturn(Number(p.startPrice), Number(p.currentPrice));
+    html += `<div class="rank-top-card ${classes[i]}"><div class="rank-medal">${medals[i]}</div><div class="rank-nick" title="${p.nick}">${p.nick}</div><div class="rank-ticker-badge">${p.ticker}</div><div class="rank-return ${returnClass(ret)}">${formatReturn(ret)}</div></div>`;
+  });
+  html += '</div>';
+
+  if (participants.length > 3) {
+    html += '<div class="rank-card">';
+    participants.slice(3).forEach((p,i) => {
+      const ret = calcReturn(Number(p.startPrice), Number(p.currentPrice));
+      const upd = p.updatedAt ? new Date(p.updatedAt).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'}) : '미갱신';
+      html += `<div class="rank-row"><div class="rank-num">${i+4}</div><div class="rank-info"><div class="rank-info-nick">${p.nick}</div><div class="rank-info-ticker">${p.ticker}</div><div class="rank-info-date">갱신: ${upd}</div></div><div><div class="rank-return-right ${returnClass(ret)}">${formatReturn(ret)}</div><div class="rank-return-sub">현재가 ${Number(p.currentPrice).toLocaleString()}</div></div></div>`;
+    });
+    html += '</div>';
+  }
+  c.innerHTML = html;
+}
+
+function isRegClosed() { return new Date() >= START; }
+
+function showDeadlineModal() {
+  document.getElementById('deadlineModal').classList.add('show');
+}
+
+function checkRegStatus() {
+  if (isRegClosed()) {
+    document.getElementById('regClosedBanner').style.display = 'block';
+    document.getElementById('regFormWrap').style.display = 'none';
+  } else {
+    document.getElementById('regClosedBanner').style.display = 'none';
+    document.getElementById('regFormWrap').style.display = 'block';
+  }
+}
+
+async function register() {
+  if (isRegClosed()) { showDeadlineModal(); return; }
+
+  const nick = document.getElementById('regNick').value.trim();
+  const ticker = document.getElementById('regTicker').value.trim().toUpperCase();
+  const startPrice = parseFloat(document.getElementById('regStartPrice').value);
+  const errEl = document.getElementById('regError');
+  const btn = document.getElementById('regBtn');
+  errEl.style.display = 'none';
+  const showErr = msg => { errEl.textContent = msg; errEl.style.display = 'block'; };
+
+  if (!nick) return showErr('닉네임을 입력해주세요.');
+  if (nick.length > 12) return showErr('닉네임은 12자 이하여야 합니다.');
+  if (!ticker) return showErr('주식 티커를 입력해주세요.');
+  if (!startPrice || startPrice <= 0) return showErr('올바른 기준가를 입력해주세요.');
+
+  btn.disabled = true; btn.textContent = '전송 중...';
+  try {
+    const res = await apiCall({ action: 'register', nick, ticker, startPrice });
+    if (res.error) { showErr(res.error); return; }
+    ['regNick','regTicker','regStartPrice'].forEach(id => document.getElementById(id).value = '');
+    showToast('success', `🎉 ${nick}님, 참가 완료!`);
+    switchTab('leaderboard');
+    loadLeaderboard();
+  } catch(e) { showErr('오류가 발생했습니다. URL 설정을 확인해주세요.'); }
+  finally { btn.disabled = false; btn.textContent = '참가 신청하기'; }
+}
+
+async function updatePrice() {
+  const nick = document.getElementById('updNick').value.trim();
+  const price = parseFloat(document.getElementById('updPrice').value);
+  if (!nick) return showToast('error', '닉네임을 입력해주세요');
+  if (!price || price <= 0) return showToast('error', '올바른 주가를 입력해주세요');
+  try {
+    const res = await apiCall({ action: 'updatePrice', nick, currentPrice: price });
+    if (res.error) { showToast('error', res.error); return; }
+    showToast('success', '✅ 수익률 갱신 완료!');
+    document.getElementById('updNick').value = '';
+    document.getElementById('updPrice').value = '';
+    loadParticipantList();
+    loadLeaderboard();
+  } catch(e) { showToast('error', '갱신 실패. URL 설정을 확인해주세요.'); }
+}
+
+async function loadParticipantList() {
+  const el = document.getElementById('participantList');
+  el.innerHTML = '<div class="loading-state"><div class="spinner"></div><div class="loading-text">불러오는 중...</div></div>';
+  try {
+    const res = await apiCall({ action: 'getAll' });
+    const list = res.participants || [];
+    if (!list.length) { el.innerHTML = '<div style="text-align:center;color:var(--gray-500);font-size:13px;padding:16px">아직 참가자가 없습니다</div>'; return; }
+    el.innerHTML = list.map(p => {
+      const ret = calcReturn(Number(p.startPrice), Number(p.currentPrice));
+      return `<div class="rank-row" style="padding:12px 0;border-bottom:1px solid var(--gray-100)"><div class="rank-info"><div class="rank-info-nick">${p.nick}</div><div class="rank-info-ticker">${p.ticker}</div></div><div><div class="rank-return-right ${returnClass(ret)}" style="font-size:14px">${formatReturn(ret)}</div><div class="rank-return-sub">${Number(p.startPrice).toLocaleString()} → ${Number(p.currentPrice).toLocaleString()}</div></div></div>`;
+    }).join('');
+  } catch(e) { el.innerHTML = '<div style="text-align:center;color:var(--red);font-size:13px;padding:16px">불러오기 실패</div>'; }
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['leaderboard','register','update'][i]===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+  if (name === 'update') loadParticipantList();
+  if (name === 'leaderboard') loadLeaderboard();
+  if (name === 'register') checkRegStatus();
+}
+
+let toastTimer;
+function showToast(type, msg) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastIcon').textContent = type === 'success' ? '✓' : '✕';
+  el.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// Init
+renderStatusBadge();
+checkRegStatus();
+updateCountdown();
+setInterval(updateCountdown, 1000);
+document.getElementById('regTicker').addEventListener('input', function() { this.value = this.value.toUpperCase(); });
+
+if (getApiUrl()) {
+  document.getElementById('setupBanner').classList.add('hidden');
+  loadLeaderboard();
+} else {
+  document.getElementById('participantBadge').textContent = '설정 필요';
+  document.getElementById('leaderboardContainer').innerHTML =
+    '<div class="rank-card"><div class="empty-state"><div class="empty-icon">⚙️</div><div class="empty-title">설정이 필요합니다</div><div class="empty-desc">상단 주황색 배너를 탭하여<br>Apps Script URL을 설정해주세요</div></div></div>';
+}
+</script>
+</body>
+</html>
